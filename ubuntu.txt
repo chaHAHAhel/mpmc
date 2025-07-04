@@ -1,0 +1,2498 @@
+Write an ALP to implement calculated a calculator using macro
+
+section .data
+msg db ' ',10
+msgLen equ $-msg
+msg1 db 'Num 1: '
+msg1Len equ $-msg1
+msg2 db 'Num 2: '
+msg2Len equ $-msg2
+msg3 db 'Sum: '
+msg3Len equ $-msg3
+msg4 db 'Difference: '
+msg4Len equ $-msg4
+msg5 db 'Product: '
+msg5Len equ $-msg5
+msg6 db 'Quotient: '
+msg6Len equ $-msg6
+msg7 db 'Remainder: '
+msg7Len equ $-msg7
+msg8 db 'Increment: '
+msg8Len equ $-msg8
+
+%macro writesystem 2
+	mov eax,4
+	mov ebx,1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+%macro readsystem 2
+	mov eax,3
+	mov ebx,0
+	mov ecx,%1
+	mov edx,%2
+	int 80h
+%endmacro
+
+%macro addition 2
+	mov eax, [%1]
+	sub eax, '0'
+	mov ebx, [%2]
+	sub ebx, '0'
+	add eax, ebx
+	add eax, '0'
+	mov [sum], eax
+%endmacro
+
+%macro subtraction 2
+	mov eax, [num1]
+	sub eax, '0'
+	mov ebx, [num2]
+	sub ebx, '0'
+	sub eax, ebx
+	add eax, '0'
+	mov [diff], eax
+%endmacro
+
+%macro multiplication 2
+	mov eax, [num1]
+	sub eax, '0'
+	mov ebx, [num2]
+	sub ebx, '0'
+	mul ebx
+	add eax, '0'
+	mov [prod], eax
+%endmacro
+
+%macro division 2
+	mov al, [num1]
+	sub al, '0'
+	mov bl, [num2]
+	sub bl, '0'
+	div bl
+	add al, '0'
+	mov [quot], al
+	add ah, '0'
+	mov [rem], ah
+%endmacro
+
+%macro increment 1
+	mov eax,[%1]
+	inc eax
+	mov [%1],eax
+%endmacro
+section .bss
+num1 RESB 5
+num2 RESB 5
+sum RESB 5
+diff RESB 5
+prod RESB 5
+quot RESB 5
+rem RESB 5
+section .text
+global _start
+
+_start:
+	writesystem msg1,msg1Len
+	readsystem num1,5
+	writesystem msg2,msg2Len
+	readsystem num2,5
+	addition num1,num2
+	writesystem msg3,msg3Len
+	writesystem sum,1
+	writesystem msg, msgLen
+	subtraction num1,num2
+	writesystem msg4,msg4Len
+	writesystem diff,1
+	writesystem msg, msgLen
+	multiplication num1,num2
+	writesystem msg5,msg5Len
+	writesystem prod, 1
+	writesystem msg, msgLen
+	division num1,num2
+	writesystem msg6,msg6Len
+	writesystem quot, 1
+	writesystem msg, msgLen
+	writesystem msg7,msg7Len
+	writesystem rem, 1
+	writesystem msg, msgLen
+	increment num1
+	writesystem msg8, msg8Len
+	writesystem num1, 5
+	writesystem msg, msgLen
+	mov eax, 1
+	mov ebx, 0
+int 80h
+
+
+
+5)Write an ALP to print the Fibonacci series in n terms
+
+
+section .data
+    string1 db "Enter size of fibo series: ", 10
+    string1len equ $-string1
+    string2 db "The series is: ", 10
+    string2len equ $-string2
+    newline db "", 10
+    nl equ $-newline
+
+section .bss
+    num resb 5
+    a resb 5
+    b resb 5
+    c resb 5
+    count resb 5
+
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro read 1
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, 5
+    int 80h
+%endmacro
+
+%macro addition 3
+    mov al, [%1]
+    sub al, '0'
+    mov bl, [%2]
+    sub bl, '0'
+    add al, bl
+    add al, '0'
+    mov [%3], al
+%endmacro
+
+%macro fibo_macro 0
+    mov eax, '0'
+    mov [a], eax
+    write a, 1
+    write newline, nl
+
+    mov al, [num]
+    cmp al, 1
+    je exit
+
+    mov eax, '1'
+    mov [b], eax
+    write b, 1
+    write newline, nl
+
+    mov al, [num]
+    cmp al, 2
+    je exit
+
+    mov byte [count], 2
+
+fibo_loop:
+    addition a, b, c
+    write c, 1
+    write newline, nl
+
+    mov al, [b]
+    mov [a], al
+
+    mov al, [c]
+    mov [b], al
+
+    inc byte [count]
+    mov al, [count]
+    mov bl, [num]
+    cmp al, bl
+    jl fibo_loop
+%endmacro
+
+section .text
+global _start
+
+_start:
+    write string1, string1len
+    read num
+
+    write string2, string2len
+
+    mov al, [num]
+    sub al, '0'
+    mov [num], al
+
+    cmp al, 0
+    je exit
+
+    fibo_macro
+
+exit:
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+section .data
+    msg db 'Enter name: '
+    msgLen equ $-msg
+    msg1 db 'Name: ',10
+    msg1Len equ $-msg1
+
+%macro writesystem 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro readsystem 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .bss
+    n RESW 20
+    cnt RESB 5
+
+section .text
+global _start
+
+_start:
+    ; Prompt user to enter a name
+    writesystem msg, msgLen
+    ; Read name input from the user
+    readsystem n, 20
+    ; Print the prompt for the name
+    writesystem msg1, msg1Len
+
+print:
+    ; Print the entered name
+    writesystem n, 20
+
+    ; Increment the counter and check if it's greater than or equal to 7
+    mov eax, [cnt]
+    inc eax
+    mov [cnt], eax
+    cmp eax, 7
+    jl print  ; Jump back to print if less than 7
+
+exit:
+    ; Exit the program
+    mov eax, 1
+    mov ebx, 0
+int 80h
+
+
+section .data
+msg1 db 'Enter number 1: '
+msg1Len equ $-msg1
+msg2 db 'Enter number 2: '
+msg2Len equ $-msg2
+msg3 db 'Entered numbers: '
+msg3Len equ $-msg3
+
+%macro writesystem 2
+	mov eax,4
+	mov ebx,1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+%macro readsystem 2
+	mov eax,3
+	mov ebx,0
+	mov ecx,%1
+	mov edx,%2
+	int 80h
+%endmacro
+
+section .bss
+num1 RESB 5
+num2 RESB 5
+
+section .text
+global _start
+_start:
+	writesystem msg1, msg1Len
+	readsystem num1, 5
+	writesystem msg2, msg2Len
+	readsystem num2, 5
+	writesystem msg3, msg3Len
+	writesystem num1,5
+	writesystem ' ',1
+	writesystem num2,5
+int 80h
+	mov eax,1
+	mov ebx,0
+int 80h
+
+
+CODE 1:
+section .data
+    msg1 db "Enter n: ", 0
+    msg1_len equ $ - msg1
+    newline db 10, 0
+    space db " ", 0
+    msg3 db "nothing ", 0
+    msg3_len equ $ - msg3
+
+section .bss
+    num resb 2
+    fib1 resb 4
+    fib2 resb 4
+    next resb 4
+    count resb 1
+
+section .text
+    global _start
+
+_start:
+    call print_prompt
+    call read_input
+    mov al,[num]
+    sub al,'0'
+    cmp al,'0'
+
+    
+     
+    je EQUAL
+    call init_fibonacci
+    call print_fibonacci_series
+
+print_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg1
+    mov edx, msg1_len
+    int 80h
+    ret
+
+read_input:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num
+    mov edx, 2
+    int 80h
+    
+    mov al, [num]
+    sub al, '0'
+    mov [count], al
+    ret
+
+init_fibonacci:
+    mov dword [fib1], '0'
+    mov dword [fib2], '1'
+
+    mov ecx, fib1
+    call print_number
+    call print_space
+
+    cmp byte [count], 1
+    je end_program
+
+    mov ecx, fib2
+    call print_number
+    call print_space
+
+    sub byte [count], 2
+    ret
+
+print_fibonacci_series:
+    cmp byte [count], 0
+    je end_program
+
+    call fib_calc
+    mov ecx, next
+    call print_number
+    call print_space
+
+    mov al, [fib2]
+    mov [fib1], al
+    mov al, [next]
+    mov [fib2], al
+
+    dec byte [count]
+    jmp print_fibonacci_series
+
+fib_calc:
+    mov al, [fib1]
+    sub al, '0'
+    mov bl, [fib2]
+    sub bl, '0'
+    add al, bl
+    add al, '0'
+    mov [next], al
+    ret
+
+print_number:
+    mov eax, 4
+    mov ebx, 1
+    mov edx, 1
+    int 80h
+    ret
+
+print_space:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, space
+    mov edx, 1
+    int 80h
+    ret
+
+EQUAL:
+mov eax, 4
+    mov ebx, 1
+    mov ecx, msg3
+    mov edx, msg3_len
+    int 80h
+	call end_program
+
+end_program:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+
+
+SECTION .data
+    msg1 db "Enter a Number: "
+    msg1len equ $-msg1
+    msg2 db "The Factorial of entered number is = "
+    msg2len equ $-msg2
+    newline db '', 10
+    n1 equ $-newline
+
+%macro writeSys 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro readSys 2
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+factorial:
+    mov eax,[num]
+    sub eax, '0'
+    mov [num], eax
+
+    mov eax, 1
+    mov ecx, [num]
+    mov ebx,1
+
+    L1: 
+        mul ebx
+        inc ebx
+        loop L1
+        add eax, '0'
+        mov [fact],eax
+ret
+
+SECTION .bss
+    num resb 5
+    fact resb 5
+
+SECTION .text
+    GLOBAL _start
+    _start:
+
+    writeSys msg1, msg1len
+    readSys num, 1
+    writeSys msg2, msg2len
+    call factorial
+    writeSys fact, 1
+    writeSys newline, n1
+
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+
+
+
+
+section .data
+    msg1 db 'Enter first number : ', 0
+    msg1len equ $-msg1
+    msg2 db 'Enter second number : ', 0
+    msg2len equ $-msg2
+    msg3 db 'Sum : ', 0
+    msg3len equ $-msg3
+    msg4 db 'Difference : ', 0
+    msg4len equ $-msg4
+    msg5 db 'Product : ', 0
+    msg5len equ $-msg5
+    msg6 db 'Quotient : ', 0
+    msg6len equ $-msg6
+    msg7 db 'Remainder : ', 0
+    msg7len equ $-msg7
+    msg8 db 'Incrementing num1:  ', 0
+    msg8len equ $-msg8
+    msg9 db 'Decrementing num2:  ', 0
+    msg9len equ $-msg9
+    msg10 db 'Exponent:  ', 0
+    msg10len equ $-msg10
+    newline db 10
+    
+section .bss
+    num1 resb 2
+    num2 resb 2
+    res resb 2
+    rem resb 2
+    
+section .text
+    global _start
+_start:
+    mov ecx, msg1
+    mov edx, msg1len
+    call print_msg
+    mov ecx, num1
+    call input_num
+    
+    mov ecx, msg2
+    mov edx, msg2len
+    call print_msg
+    mov ecx, num2
+    call input_num
+    
+    call add_nums   ;add
+    
+    mov ecx, msg3
+    mov edx, msg3len
+    call print_msg
+    call print_res
+    call print_new
+    
+    call sub_nums   ;sub
+    
+    mov ecx, msg4
+    mov edx, msg4len
+    call print_msg
+    call print_res
+    call print_new
+    
+    call mul_nums   ;mul
+    
+    mov ecx, msg5
+    mov edx, msg5len
+    call print_msg
+    call print_res
+    call print_new
+    
+    call div_nums   ;div
+    
+    mov ecx, msg6
+    mov edx, msg6len
+    call print_msg
+    call print_res  ;quo
+    call print_new
+    
+    mov ecx, msg7
+    mov edx, msg7len
+    call print_msg
+    mov ecx, rem     ;rem
+    mov edx, 1
+    call print_msg
+    call print_new
+
+    call increment      ;incr
+    mov ecx, msg8
+    mov edx, msg8len
+    call print_msg
+    call print_res
+    call print_new
+    
+    call decrement      ;decr
+    mov ecx, msg9
+    mov edx, msg9len
+    call print_msg
+    call print_res
+    call print_new
+
+    call exponent        ;expo
+    mov ecx, msg10
+    mov edx, msg10len
+    call print_msg
+    call print_res
+    call print_new
+    
+    call exit_prog
+    
+add_nums:
+    mov al, [num1]
+    sub al, '0'
+    mov bl, [num2]
+    sub bl, '0'
+    add al, bl
+    add al, '0'
+    mov [res], al
+    ret
+sub_nums:
+    mov al, [num1]
+    sub al, '0'
+    mov bl, [num2]
+    sub bl, '0'
+    sub al, bl
+    add al, '0'
+    mov [res], al
+    ret   
+mul_nums:
+    mov al, [num1]
+    sub al, '0'
+    mov bl, [num2]
+    sub bl, '0'
+    mul bl
+    add al, '0'
+    mov [res], al
+    add ah, '0'
+    mov [rem], ah
+    ret   
+div_nums:
+    mov al, [num1]
+    sub al, '0'
+    mov bl, [num2]
+    sub bl, '0'
+    div bl
+    add al, '0'
+    mov [res], al
+    add ah, '0'
+    mov [rem], ah
+    ret  
+    
+increment:          ;incr
+    mov al, [num1]
+    sub al, '0'
+    inc al
+    add al, '0'
+    mov [res], al
+    ret
+
+decrement:          ;decr
+    mov al, [num2]
+    sub al, '0'
+    dec al
+    add al, '0'
+    mov [res], al
+    ret
+
+exponent:           ;exponent
+    mov al, [num1]
+    sub al, '0'
+    mov cl, [num2]
+    sub cl, '0'
+    mov bl, al
+    dec cl
+    cmp cl, 0
+    jl exp_zero
+exp_loop:
+    mul bl
+    loop exp_loop
+exp_done:
+    add al, '0'
+    mov [res], al
+    ret
+exp_zero:
+    mov al, '1'
+    mov [res], al
+    ret
+    
+print_msg:
+    mov eax, 4
+    mov ebx, 1
+    int 80h
+    ret
+print_res:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, res
+    mov edx, 1
+    int 80h
+    ret
+print_new:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    ret
+input_num:
+    mov eax, 3
+    mov ebx, 0
+    mov edx, 2
+    int 80h
+    ret
+    
+exit_prog:
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+
+
+
+
+
+
+section .data
+	size db "enter size of number: "
+	sizelen equ $-size
+    
+	msg1 db "number1: "
+	len1 equ $-msg1
+    
+	msg2 db "number2: "
+	len2 equ $-msg2
+
+	res db "SUM: "
+	reslen equ $-res
+
+	nl db 10
+    nlL equ $-nl
+
+section .bss  
+	nodig resb 2	 
+	num1 resb 100
+	num2 resb 100
+	sum resb 100
+
+%macro display 2
+    mov eax, 4 
+    mov ebx, 1  
+	mov ecx, %1  
+	mov edx, %2  
+	int 80h   
+%endmacro
+
+%macro input 2
+	mov eax, 3  		 
+	mov ebx, 0    	 
+	mov ecx, %1  
+	mov edx, %2  
+	int 80h   
+%endmacro
+    
+section .text
+	global _start
+_start:
+	display size, sizelen
+	input nodig, 2
+
+	display msg1, len1 	 
+	input num1, 100
+
+	display msg2, len2
+	input num2, 100
+
+	movzx ecx, byte[nodig]
+	sub ecx, '0'
+	mov esi, ecx
+	dec esi
+
+	call add
+
+	display res,reslen
+	display sum,100
+	display nl,nlL
+
+mov eax, 1
+xor ebx, ebx
+int 80h   
+clc 
+    
+add:
+   mov al,[num1+esi]
+   mov bl,[num2+esi]
+   adc al,bl 
+
+   aaa
+   pushf
+   or al,'0'
+   popf
+   
+   mov[sum+esi],al
+   dec esi
+   loop add
+ret
+
+
+
+
+
+
+
+
+section .data
+	size db "enter size of number: "
+	sizelen equ $-size
+    
+	msg1 db "number1: "
+	len1 equ $-msg1
+    
+	msg2 db "number2: "
+	len2 equ $-msg2
+
+	diff db "DIFFERENCE: "
+	difflen equ $-diff
+
+	nl db 10
+    nlL equ $-nl
+
+section .bss  
+	nodig resb 2	 
+	num1 resb 100
+	num2 resb 100
+	subno resb 100
+
+%macro display 2
+	mov ecx, %1  
+	mov edx, %2  
+	mov ebx, 1  
+	mov eax, 4  
+	int 80h   
+%endmacro
+
+%macro input 2
+	mov eax, 3  		 
+	mov ebx, 0    	 
+	mov ecx, %1  
+	mov edx, %2  
+	int 80h   
+%endmacro
+    
+section .text
+	global _start
+_start:
+	display size, sizelen
+	input nodig, 2
+
+	display msg1, len1 	 
+	input num1, 100
+
+	display msg2, len2
+	input num2, 100
+
+	movzx ecx, byte[nodig]
+	sub ecx, '0'
+	mov esi, ecx
+	dec esi
+
+	call sub
+
+	display diff,difflen
+	display subno,100
+	display nl,nlL
+
+mov eax, 1
+xor ebx, ebx
+int 80h   
+clc
+    
+sub:
+   mov al,[num1+esi]
+   mov bl,[num2+esi]
+   sbb al,bl
+
+   aaa
+   pushf
+   or al,'0'
+   popf
+   
+   mov[subno+esi],al
+   dec esi
+   loop sub
+ret
+
+
+
+
+
+section .data
+    prompt db "Enter a number: ", 0
+    prompt_len equ $ - prompt
+
+    msg db "Array elements: ", 0
+    msg_len equ $ - msg
+
+    newline db 10              ; newline character (ASCII 10)
+
+section .bss
+    arr resb 5                 ; array to store 5 characters (numbers)
+    num resb 2                 ; buffer to read one number (and newline)
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5                 ; loop counter for 5 inputs
+    mov esi, arr               ; ESI will point to array
+
+input_loop:
+    push ecx                   ; save ECX (loop counter)
+
+    call write_prompt          ; ask user to enter number
+    call read_number           ; read 1 character into num
+    
+    mov al, [num]              ; move number character from num to AL
+    mov [esi], al              ; store it into array
+    inc esi                    ; move to next array location
+
+    pop ecx                    ; restore ECX
+    loop input_loop            ; decrement ECX and loop if not zero
+
+    call write_newline
+    call write_msg
+    call write_newline
+
+    mov ecx, 5                 ; loop counter to print 5 elements
+    mov esi, arr               ; point again to start of array
+
+output_loop:
+    push ecx                   ; save ECX again
+
+    mov al, [esi]              ; get current array element
+    mov [num], al              ; move it into num buffer
+    call write_number          ; print the number
+    call write_newline         ; print newline
+
+    inc esi                    ; next array element
+    pop ecx                    ; restore ECX
+    loop output_loop           ; loop until ECX = 0
+
+    call exit_program          ; exit program
+
+; -------------------------
+; Print "Enter a number: "
+write_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt
+    mov edx, prompt_len
+    int 80h
+    ret
+
+; Read input into num (2 bytes: digit and newline)
+read_number:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num
+    mov edx, 2
+    int 80h
+    ret
+
+; Print "Array elements: "
+write_msg:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg
+    mov edx, msg_len
+    int 80h
+    ret
+
+; Print newline character
+write_newline:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    ret
+
+; Print 1 number from num
+write_number:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num
+    mov edx, 1
+    int 80h
+    ret
+
+; Exit the program
+exit_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+
+
+
+
+
+section .data
+    prompt db "Enter a number: ", 0
+    prompt_len equ $ - prompt
+
+    msg_pos db "Positive count: ", 0
+    msg_pos_len equ $ - msg_pos
+
+    msg_neg db "Negative count: ", 0
+    msg_neg_len equ $ - msg_neg
+
+    newline db 10               ; newline character
+
+section .bss
+    arr resb 5                  ; Array to store 5 signed numbers
+    num resb 3                  ; To read up to "-9" + newline
+    pos_count resb 1            ; Positive counter
+    neg_count resb 1            ; Negative counter
+    pos_ascii resb 2            ; Positive count in ASCII
+    neg_ascii resb 2            ; Negative count in ASCII
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5                  ; Read 5 numbers
+    mov esi, arr                ; ESI will point to array
+    mov byte [pos_count], 0     ; Initialize counters
+    mov byte [neg_count], 0
+
+input_loop:
+    push ecx                    ; Save loop counter
+    call write_prompt
+    call read_number
+
+    mov al, [num]               ; Read first byte
+    cmp al, '-'                 ; Is it a negative number?
+    jne store_positive
+    mov al, [num+1]             ; If negative, get second byte
+    sub al, '0'                 ; Convert to number
+    neg al                      ; Make it negative
+    jmp store_value
+
+store_positive:
+    sub al, '0'                 ; Convert ASCII to number
+
+store_value:
+    mov [esi], al               ; Store number in array
+    inc esi                     ; Move to next array index
+    pop ecx                     ; Restore loop counter
+    loop input_loop             ; Repeat for 5 numbers
+
+    mov ecx, 5                  ; Reset loop counter
+    mov esi, arr                ; Point ESI to start of array
+
+count_loop:
+    push ecx
+    mov al, [esi]
+    cmp al, 0
+    jl is_negative
+    inc byte [pos_count]
+    jmp next_count
+
+is_negative:
+    inc byte [neg_count]
+
+next_count:
+    inc esi
+    pop ecx
+    loop count_loop
+
+    call write_newline
+    call convert_pos_to_ascii
+    call convert_neg_to_ascii
+    call write_pos_count
+    call write_neg_count
+    call exit_program
+
+; ------------------------ Subroutines ------------------------
+
+write_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt
+    mov edx, prompt_len
+    int 80h
+    ret
+
+read_number:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num
+    mov edx, 3         ; read 3 bytes max (e.g., "-9\n")
+    int 80h
+    ret
+
+write_newline:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    ret
+
+convert_pos_to_ascii:
+    mov al, [pos_count]
+    add al, '0'                 ; Convert to ASCII
+    mov [pos_ascii], al
+    mov byte [pos_ascii+1], 0  ; Null terminate
+    ret
+
+convert_neg_to_ascii:
+    mov al, [neg_count]
+    add al, '0'
+    mov [neg_ascii], al
+    mov byte [neg_ascii+1], 0
+    ret
+
+write_pos_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_pos
+    mov edx, msg_pos_len
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, pos_ascii
+    mov edx, 1
+    int 80h
+
+    call write_newline
+    ret
+
+write_neg_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_neg
+    mov edx, msg_neg_len
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, neg_ascii
+    mov edx, 1
+    int 80h
+
+    call write_newline
+    ret
+
+exit_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+
+
+
+
+section .data
+    prompt db "Enter a number: ", 0
+    prompt_len equ $ - prompt
+
+    msg_odd db "Odd count: ", 0
+    msg_odd_len equ $ - msg_odd
+
+    msg_even db "Even count: ", 0
+    msg_even_len equ $ - msg_even
+
+    newline db 10
+
+section .bss
+    arr resb 5               ; array for 5 numbers
+    num resb 2               ; input buffer (digit + newline)
+    odd_count resb 1         ; counter for odd numbers
+    even_count resb 1        ; counter for even numbers
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5               ; we will read 5 numbers
+    mov esi, arr             ; ESI points to array start
+    mov byte [odd_count], 0  ; initialize odd count to 0
+    mov byte [even_count], 0 ; initialize even count to 0
+
+input_loop:
+    push ecx                 ; save loop counter
+    call write_prompt        ; show prompt
+    call read_number         ; read number into num
+
+    mov al, [num]            ; load character from input
+    sub al, '0'              ; convert ASCII to integer
+    mov [esi], al            ; store number in array
+    inc esi                  ; move to next position
+
+    pop ecx                  ; restore loop counter
+    loop input_loop          ; repeat for 5 numbers
+
+    mov ecx, 5               ; reset loop for counting
+    mov esi, arr             ; reset ESI to array start
+
+count_loop:
+    push ecx
+    mov al, [esi]            ; load number from array
+    test al, 1               ; check if LSB is 1 (odd)
+    jz even_number           ; if zero → even
+
+    inc byte [odd_count]     ; increment odd count
+    jmp next_iteration
+
+even_number:
+    inc byte [even_count]    ; increment even count
+
+next_iteration:
+    inc esi
+    pop ecx
+    loop count_loop
+
+    call write_newline
+    call write_even_count
+    call write_odd_count
+    call exit_program
+
+; -----------------------------
+; Subroutine: write prompt
+write_prompt:
+    mov eax, 4               ; syscall: write
+    mov ebx, 1               ; fd: stdout
+    mov ecx, prompt
+    mov edx, prompt_len
+    int 80h
+    ret
+
+; Subroutine: read input
+read_number:
+    mov eax, 3               ; syscall: read
+    mov ebx, 0               ; fd: stdin
+    mov ecx, num
+    mov edx, 2               ; read digit + newline
+    int 80h
+    ret
+
+; Subroutine: print newline
+write_newline:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    ret
+
+; Subroutine: write even count
+write_even_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_even
+    mov edx, msg_even_len
+    int 80h
+
+    mov al, [even_count]
+    add al, '0'              ; convert to ASCII
+    mov [num], al            ; reuse num as output buffer
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num
+    mov edx, 1
+    int 80h
+
+    call write_newline
+    ret
+
+; Subroutine: write odd count
+write_odd_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_odd
+    mov edx, msg_odd_len
+    int 80h
+
+    mov al, [odd_count]
+    add al, '0'              ; convert to ASCII
+    mov [num], al
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num
+    mov edx, 1
+    int 80h
+
+    call write_newline
+    ret
+
+; Subroutine: exit program
+exit_program:
+    mov eax, 1               ; syscall: exit
+    xor ebx, ebx             ; status 0
+    int 80h
+
+
+
+
+
+section .data
+    prompt db "Enter a number: ", 0               ; Prompt for user input
+    prompt_len equ $ - prompt
+
+    msg_above db "Count above 5: ", 0             ; Message for numbers > 5
+    msg_above_len equ $ - msg_above
+
+    msg_below db "Count below 5: ", 0             ; Message for numbers < 5
+    msg_below_len equ $ - msg_below
+
+    msg_equal db "Count equal to 5: ", 0          ; Message for numbers == 5
+    msg_equal_len equ $ - msg_equal
+
+    newline db 10                                 ; Newline character
+
+section .bss
+    arr resb 5                ; Array to store 5 entered numbers
+    num resb 2                ; Buffer to read each number (1 digit + newline)
+    above_5_count resb 1      ; Counter for numbers > 5
+    below_5_count resb 1      ; Counter for numbers < 5
+    equal_5_count resb 1      ; Counter for numbers = 5
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5                ; Loop 5 times
+    mov esi, arr              ; ESI will point to current array index
+    mov byte [above_5_count], 0
+    mov byte [below_5_count], 0
+    mov byte [equal_5_count], 0
+
+; ========== Input Loop ==========
+input_loop:
+    push ecx                 ; Save loop counter
+    call write_prompt        ; Display prompt
+    call read_number         ; Read a number from user
+
+    mov al, [num]            ; Load entered character
+    sub al, '0'              ; Convert ASCII to number (e.g., '6' → 6)
+    mov [esi], al            ; Store number in array
+    inc esi                  ; Move to next array position
+
+    pop ecx                  ; Restore counter
+    loop input_loop          ; Repeat for 5 numbers
+
+; ========== Counting Loop ==========
+    mov ecx, 5               ; Reset counter to 5
+    mov esi, arr             ; Point to start of array
+
+count_loop:
+    push ecx
+    mov al, [esi]            ; Load current number
+    cmp al, 5
+    jg above_five            ; If greater than 5 → jump
+    jl below_five            ; If less than 5 → jump
+    je equal_five            ; If equal to 5 → jump
+    jmp next_iteration       ; Safety jump (not really needed)
+
+above_five:
+    inc byte [above_5_count]
+    jmp next_iteration
+
+below_five:
+    inc byte [below_5_count]
+    jmp next_iteration
+
+equal_five:
+    inc byte [equal_5_count]
+
+next_iteration:
+    inc esi                  ; Move to next number in array
+    pop ecx
+    loop count_loop
+
+; ========== Output Section ==========
+    call write_newline
+    call write_above_count
+    call write_below_count
+    call write_equal_count
+    call exit_program
+
+; -----------------------
+; Write prompt message
+write_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt
+    mov edx, prompt_len
+    int 80h
+    ret
+
+; Read a number (2 bytes: digit and newline)
+read_number:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num
+    mov edx, 2
+    int 80h
+    ret
+
+; Write newline character
+write_newline:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    ret
+
+; Write "Count above 5"
+write_above_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_above
+    mov edx, msg_above_len
+    int 80h
+
+    mov al, [above_5_count]
+    add al, '0'              ; Convert to ASCII
+    mov [num], al
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num
+    mov edx, 1
+    int 80h
+    call write_newline
+    ret
+
+; Write "Count below 5"
+write_below_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_below
+    mov edx, msg_below_len
+    int 80h
+
+    mov al, [below_5_count]
+    add al, '0'
+    mov [num], al
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num
+    mov edx, 1
+    int 80h
+    call write_newline
+    ret
+
+; Write "Count equal to 5"
+write_equal_count:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_equal
+    mov edx, msg_equal_len
+    int 80h
+
+    mov al, [equal_5_count]
+    add al, '0'
+    mov [num], al
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num
+    mov edx, 1
+    int 80h
+    call write_newline
+    ret
+
+; Exit the program
+exit_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+
+
+
+
+
+section .data
+    prompt      db "Enter a number: ", 0
+    prompt_len  equ $ - prompt
+
+    msg_sum     db "Sum of elements: ", 0
+    msg_sum_len equ $ - msg_sum
+
+    newline     db 10
+
+section .bss
+    arr         resb 5        ; Store 5 digits
+    num         resb 2        ; For input (digit + newline)
+    sum         resb 1        ; Final sum
+    sum_ascii   resb 2        ; To store ASCII digit + null
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5                ; Loop counter
+    mov esi, arr              ; Point ESI to start of array
+    mov byte [sum], 0         ; Clear sum
+
+; --- Input Loop ---
+input_loop:
+    push ecx
+    call write_prompt
+    call read_number
+
+    mov al, [num]             ; Read input character
+    sub al, '0'               ; Convert ASCII → number
+    mov [esi], al             ; Store into array
+    inc esi
+    pop ecx
+    loop input_loop
+
+; --- Sum Loop ---
+    mov ecx, 5
+    mov esi, arr
+    xor al, al                ; AL = 0 (accumulator)
+
+sum_loop:
+    add al, [esi]             ; Add current value to AL
+    inc esi
+    loop sum_loop
+
+    mov [sum], al             ; Store final sum (1–9)
+
+; --- Output ---
+    call write_newline
+    call write_sum
+    call exit_program
+
+; --- Print "Enter a number: " ---
+write_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt
+    mov edx, prompt_len
+    int 80h
+    ret
+
+; --- Read 2 bytes (digit + newline) ---
+read_number:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num
+    mov edx, 2
+    int 80h
+    ret
+
+; --- Print newline ---
+write_newline:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    ret
+
+; --- Display "Sum of elements: " and the single-digit sum ---
+write_sum:
+    ; Print the message
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_sum
+    mov edx, msg_sum_len
+    int 80h
+
+    ; Convert sum to ASCII (assumes 1–9 only)
+    mov al, [sum]
+    add al, '0'
+    mov [sum_ascii], al
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, sum_ascii
+    mov edx, 1
+    int 80h
+
+    call write_newline
+    ret
+
+; --- Exit Program ---
+exit_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+
+
+
+
+section .data
+    prompt_msg     db "Enter a number: ", 0
+    prompt_len     equ $ - prompt_msg
+
+    search_msg     db "Enter number to search: ", 0
+    search_len     equ $ - search_msg
+
+    found_msg      db "Number found at index: ", 0
+    found_len      equ $ - found_msg
+
+    notfound_msg   db "Number not found", 0
+    notfound_len   equ $ - notfound_msg
+
+    newline        db 10
+    newline_len    equ 1
+
+section .bss
+    arr resb 5             ; array for 5 numbers
+    num resb 2             ; input buffer (digit + newline)
+    search resb 2          ; number to search for
+    digit_ascii resb 1     ; buffer for displaying index
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5             ; loop 5 times
+    mov esi, arr
+
+input_loop:
+    push ecx
+    call write_prompt
+    call read_number
+    mov al, [num]
+    sub al, '0'
+    mov [esi], al
+    inc esi
+    pop ecx
+    loop input_loop
+
+    ; Ask user for number to search
+    call write_search_prompt
+    call read_search
+
+    ; Linear search
+    mov ecx, 5
+    mov esi, arr
+    xor edi, edi           ; index = 0
+
+search_loop:
+    mov al, [esi]
+    mov bl, [search]
+    cmp al, bl
+    je found_label
+    inc esi
+    inc edi
+    loop search_loop
+
+    ; Not found
+    call write_newline
+    call write_notfound
+    call write_newline
+    call exit_program
+
+found_label:
+    ; Found at index EDI
+    call write_newline
+    call write_found
+    mov eax, edi           ; ✅ Fix: avoid 'dil' (use 32-bit EDI)
+    add al, '0'            ; convert to ASCII
+    mov [digit_ascii], al
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, digit_ascii
+    mov edx, 1
+    int 80h
+    call write_newline
+    call exit_program
+
+; -----------------------
+; Subroutines
+; -----------------------
+
+write_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt_msg
+    mov edx, prompt_len
+    int 80h
+    ret
+
+write_search_prompt:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, search_msg
+    mov edx, search_len
+    int 80h
+    ret
+
+read_number:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num
+    mov edx, 2
+    int 80h
+    ret
+
+read_search:
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, search
+    mov edx, 2
+    int 80h
+    mov al, [search]
+    sub al, '0'
+    mov [search], al
+    ret
+
+write_found:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, found_msg
+    mov edx, found_len
+    int 80h
+    ret
+
+write_notfound:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, notfound_msg
+    mov edx, notfound_len
+    int 80h
+    ret
+
+write_newline:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, newline_len
+    int 80h
+    ret
+
+exit_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+
+
+%macro print 2
+    push eax
+    push ebx
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+    pop ebx
+    pop eax
+%endmacro
+%macro exit 0
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
+%endmacro
+%macro read_stdin 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+%endmacro
+section .data
+    index dd 0
+    prompt_size db "Enter the number of elements: ", 0
+    prompt_element db "Enter element ", 0
+    colon db ": ", 0
+    prompt_target db "Enter the target number to search: ", 0
+    msg_found db "Element found at index: ", 0
+    msg_not_found db "Element not found", 0
+    msg_iteration db "Iteration ", 0
+    msg_left db "  Left: ", 0
+    msg_right db ",  Right: ", 0
+    msg_mid db ",  Mid: ", 0
+    msg_value db ",  Value: ", 0
+    newline db 10, 0
+section .bss
+    array resd 100
+    size resd 1
+    target resd 1
+    buffer resb 10
+    iteration_count resd 1
+    left resd 1
+    right resd 1
+section .text
+global _start
+_start:
+    print prompt_size, 30
+    call read_int
+    mov [size], eax
+    mov ecx, [size]
+    mov edi, array
+.input_loop:
+    push ecx
+    push edi
+    print prompt_element, 14
+    print colon, 2
+    call read_int
+    pop edi
+    mov [edi], eax
+    add edi, 4
+    pop ecx
+    loop .input_loop
+    print prompt_target, 34
+    call read_int
+    mov [target], eax
+    mov dword [left], 0
+    mov eax, [size]
+    dec eax
+    mov [right], eax
+    mov dword [iteration_count], 1
+.search_loop:
+    mov eax, [left]
+    cmp eax, [right]
+    jg .not_found
+    mov edx, eax
+    add edx, [right]
+    shr edx, 1
+    mov [index], edx
+    print msg_iteration, 10
+    mov eax, [iteration_count]
+    call print_int
+    print msg_left, 8
+    mov eax, [left]
+    call print_int
+    print msg_right, 9
+    mov eax, [right]
+    call print_int
+    print msg_mid, 7
+    mov eax, [index]
+    call print_int
+    print msg_value, 9
+    mov edx, [index]
+    mov eax, [array + edx * 4]
+    call print_int
+    print newline, 1
+    mov edx, [index]
+    mov esi, [array + edx * 4]
+    cmp [target], esi
+    je .found
+    jl .search_left
+    jg .search_right
+.search_left:
+    mov eax, [index]
+    dec eax
+    mov [right], eax
+    inc dword [iteration_count]
+    jmp .search_loop
+.search_right:
+    mov eax, [index]
+    inc eax
+    mov [left], eax
+    inc dword [iteration_count]
+    jmp .search_loop
+.found:
+    print msg_found, 24
+    mov eax, [index]
+    call print_int
+    print newline, 1
+    jmp .exit
+.not_found:
+    print msg_not_found, 17
+    print newline, 1
+.exit:
+    exit
+read_int:
+    push ebx
+    push ecx
+    push edx
+    push esi
+    read_stdin buffer, 10
+    mov ecx, eax
+    mov esi, buffer
+    xor eax, eax
+.convert_loop:
+    movzx edx, byte [esi]
+    inc esi
+    cmp edx, 0
+    je .done
+    cmp edx, 10
+    je .done
+    cmp edx, '0'
+    jl .invalid
+    cmp edx, '9'
+    jg .invalid
+    sub edx, '0'
+    imul eax, 10
+    add eax, edx
+    loop .convert_loop
+.done:
+    pop esi
+    pop edx
+    pop ecx
+    pop ebx
+    ret
+.invalid:
+    xor eax, eax
+    jmp .done
+print_int:
+    push eax
+    push ecx
+    push edx
+    push edi
+    mov ecx, 10
+    mov edi, buffer + 9
+    mov byte [edi], 0
+.convert_loop:
+    xor edx, edx
+    div ecx
+    add dl, '0'
+    dec edi
+    mov [edi], dl
+    test eax, eax
+    jnz .convert_loop
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, edi
+    mov edx, buffer + 9
+    sub edx, edi
+    int 0x80
+    pop edi
+    pop edx
+    pop ecx
+    pop eax
+    ret
+
+
+
+
+
+
+section .data
+msg db "Enter number of elements: " 
+msglen equ $-msg
+
+msg2 db "Enter the elements in the array: " 
+msg2len equ $-msg2
+
+msg3 db "The sorted array is: "
+msg3len equ $-msg3
+
+msg4 db "Pass "
+msg4len equ $-msg4
+msg5 db " : " 
+msg5len equ $-msg5
+newline db 10 
+space db ' ' 
+
+%macro write 2 
+mov eax,4
+mov ebx,1
+mov ecx,%1
+mov edx,%2
+int 80h
+%endmacro
+
+%macro read 2 
+mov eax,3
+mov ebx,2
+mov ecx,%1
+mov edx,%2
+int 80h
+mov eax,3
+mov ebx,2
+mov ecx,trash
+mov edx,1
+int 80h
+%endmacro
+
+input:
+write msg2,msg2len
+mov [i],dword '0' 
+loop1:
+mov esi,[i] 
+cmp esi,[n] 
+jge end 
+sub esi,'0' 
+add esi,arr 
+read esi,1 
+inc dword[i] 
+jmp loop1 
+end:
+ret 
+
+display:
+mov [i],dword '0' 
+loop2:
+mov esi,[i] 
+cmp esi,[n] 
+jge end2 
+sub esi,'0' 
+add esi,arr 
+write esi,1 
+write space,1 
+inc dword[i] 
+jmp loop2 
+end2:
+write newline,1
+ret 
+
+insertion_sort:
+mov eax,1
+mov bl,[n]
+sub bl,'0'
+loop3:
+cmp al,bl
+jge end3
+pushad
+write msg4,msg4len
+write j,9
+write msg5,msg5len
+call display 
+popad 
+mov ecx,0
+mov cl,al
+sub cl,1
+mov dl,[arr+eax]
+loop4:
+cmp cl,0
+jl update
+cmp dl,[arr+ecx]
+jge update
+mov dh,[arr+ecx]
+mov [arr+ecx+1],dh
+dec ecx
+jmp loop4
+update:
+mov [arr+ecx+1],dl
+inc al
+inc byte[j]
+jmp loop3
+end3:
+write msg4,msg4len
+write j,9
+write msg5,msg5len
+call display 
+ret
+
+section .bss
+n resb 4
+arr resb 10
+i resb 4
+j resb 9
+trash resb 1 
+
+section .text
+global _start
+_start:
+write msg,msglen
+read n,1
+mov eax,'0'
+mov [j],eax
+call input
+write newline,1
+call insertion_sort 
+write newline,1
+write msg3,msg3len
+call display
+mov eax,1
+mov ebx,0
+int 80h
+
+
+
+
+;----------------------[Selection Sort with Macros]----------------------
+section .data
+    msg db "Enter 5 integers separated by space (Selection Sort): ", 0
+    msglen equ $ - msg
+    iter db "Iteration ", 0
+    iterlen equ $ - iter
+    colon db ": ", 0
+    colonlen equ $ - colon
+    space db " ", 0
+    newline db 10, 0
+
+section .bss
+    array resd 5
+    buffer resb 100
+    temp resd 1
+    num_buffer resb 12
+    iter_count resb 1
+
+%macro display 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro input 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .text
+    global _start
+
+_start:
+    display msg, msglen
+    input buffer, 100
+
+    ; Parse Input
+    mov esi, buffer
+    mov edi, array
+    mov ecx, 5
+
+.parse:
+    xor eax, eax
+.next_digit:
+    mov bl, [esi]
+    cmp bl, '0'
+    jb .store
+    cmp bl, '9'
+    ja .store
+    sub bl, '0'
+    imul eax, eax, 10
+    add eax, ebx
+    inc esi
+    jmp .next_digit
+
+.store:
+    mov [edi], eax
+    add edi, 4
+    inc esi
+    loop .parse
+
+    ; Selection Sort
+    mov byte [iter_count], 0
+    mov ecx, 0
+.sel_outer:
+    cmp ecx, 4
+    jg .done
+    inc byte [iter_count]
+    mov edx, ecx
+    mov esi, ecx
+    inc esi
+.find_min:
+    cmp esi, 5
+    jge .sel_swap
+    mov eax, [array + edx*4]
+    mov ebx, [array + esi*4]
+    cmp ebx, eax
+    jge .skip
+    mov edx, esi
+.skip:
+    inc esi
+    jmp .find_min
+.sel_swap:
+    cmp edx, ecx
+    je .print
+    mov eax, [array + ecx*4]
+    mov ebx, [array + edx*4]
+    mov [array + ecx*4], ebx
+    mov [array + edx*4], eax
+.print:
+    display iter, iterlen
+    movzx eax, byte [iter_count]
+    call int_to_string
+    display num_buffer, eax
+    display colon, colonlen
+    call display_array
+    inc ecx
+    jmp .sel_outer
+
+.done:
+    display newline, 1
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+;----------------------[Display Array]----------------------
+display_array:
+    push ecx
+    push eax
+    mov ecx, 0
+.loop:
+    cmp ecx, 5
+    jge .done_disp
+    mov eax, [array + ecx*4]
+    call int_to_string
+    display num_buffer, eax
+    display space, 1
+    inc ecx
+    jmp .loop
+.done_disp:
+    display newline, 1
+    pop eax
+    pop ecx
+    ret
+
+;----------------------[Int to String]----------------------
+int_to_string:
+    mov edi, num_buffer
+    mov ecx, 0
+    mov ebx, 10
+    test eax, eax
+    jnz .conv
+    mov byte [edi], '0'
+    mov eax, 1
+    ret
+.conv:
+    mov esi, edi
+.reverse:
+    xor edx, edx
+    div ebx
+    add dl, '0'
+    mov [esi], dl
+    inc esi
+    inc ecx
+    test eax, eax
+    jnz .reverse
+    ; Now reverse digits
+    mov edi, num_buffer
+    sub esi, 1
+    mov eax, ecx
+.revloop:
+    cmp ecx, 0
+    je .done
+    mov dl, [esi]
+    mov [edi], dl
+    inc edi
+    dec esi
+    dec ecx
+    jmp .revloop
+.done:
+    ret
+
+
+
+
+
+
+section .data
+prompt_msg db "Enter 5 integers separated by space (Bubble Sort): ", 0
+prompt_len equ $ - prompt_msg
+
+iter_msg db "Iteration ", 0
+iter_len equ $ - iter_msg
+
+colon_msg db ": ", 0
+colon_len equ $ - colon_msg
+
+space db " ", 0
+newline db 10, 0
+
+array times 5 dd 0
+array_size equ 5
+
+buffer times 100 db 0
+
+section .bss
+iter_count resb 1
+num_buffer resb 12
+
+section .text
+global _start
+
+%macro print 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+%endmacro
+
+%macro read 2
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+%endmacro
+
+_start:
+    print prompt_msg,prompt_len
+
+    read buffer, 100
+
+    mov esi, buffer
+    mov edi, 0
+
+parse_loop:
+    cmp edi, array_size
+    jge start_sorting
+    cmp byte [esi], ' '
+    je skip_space
+    cmp byte [esi], 10
+    je skip_space
+    xor eax, eax
+
+parse_digit:
+    movzx ecx, byte [esi]
+    cmp ecx, '0'
+    jl store_number
+    cmp ecx, '9'
+    jg store_number
+    sub ecx, '0'
+    imul eax, 10
+    add eax, ecx
+    inc esi
+    jmp parse_digit
+
+store_number:
+    mov [array + edi*4], eax
+    inc edi
+    jmp parse_loop
+
+skip_space:
+    inc esi
+    jmp parse_loop
+
+start_sorting:
+    mov byte [iter_count], 0
+    mov ecx, array_size - 1
+
+outer_loop:
+    test ecx, ecx
+    jz exit_program
+    push ecx
+    inc byte [iter_count]
+
+    print iter_msg, iter_len
+
+    movzx eax, byte [iter_count]
+    call int_to_string
+    push eax
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num_buffer
+    pop edx
+    int 0x80
+
+    print colon_msg, colon_len
+
+    mov ecx, 0
+
+inner_loop:
+    mov eax, [array + ecx*4]
+    mov edx, [array + ecx*4 + 4]
+    cmp eax, edx
+    jle no_swap
+    mov [array + ecx*4], edx
+    mov [array + ecx*4 + 4], eax
+
+no_swap:
+    inc ecx
+    cmp ecx, [esp]
+    jl inner_loop
+
+    call display_array
+    pop ecx
+    dec ecx
+    jmp outer_loop
+
+exit_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
+
+display_array:
+    push ecx
+    push edx
+    mov ecx, 0
+
+display_loop:
+    cmp ecx, array_size
+    jge display_done
+    mov eax, [array + ecx*4]
+    call int_to_string
+    push ecx
+    push eax
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, num_buffer
+    pop edx
+    int 0x80
+
+    pop ecx
+    inc ecx
+    cmp ecx, array_size
+    jge skip_space_display
+
+    push ecx
+    print space, 1
+    pop ecx
+
+skip_space_display:
+    jmp display_loop
+
+display_done:
+    print newline, 1
+    pop edx
+    pop ecx
+    ret
+
+int_to_string:
+    push ebx
+    push ecx
+    push edx
+    push esi
+    push edi
+
+    mov esi, num_buffer
+    add esi, 11
+    mov byte [esi], 0
+    mov ebx, 10
+
+    test eax, eax
+    jnz .convert_loop
+    dec esi
+    mov byte [esi], '0'
+    jmp .done
+
+.convert_loop:
+    test eax, eax
+    jz .done
+    xor edx, edx
+    div ebx
+    add dl, '0'
+    dec esi
+    mov [esi], dl
+    jmp .convert_loop
+
+.done:
+    mov edi, num_buffer
+    mov eax, num_buffer
+    add eax, 11
+    sub eax, esi
+    mov ecx, eax
+    cld
+
+.copy_loop:
+    cmp ecx, 0
+    je .copy_done
+    mov al, [esi]
+    mov [edi], al
+    inc esi
+    inc edi
+    dec ecx
+    jmp .copy_loop
+
+.copy_done:
+    mov eax, edi
+    sub eax, num_buffer
+
+    pop edi
+    pop esi
+    pop edx
+    pop ecx
+    pop ebx
+    ret
