@@ -1,0 +1,2029 @@
+
+macro fibonacci
+section .data
+    string1 db "Enter size of fibonacci series: ", 10
+    string1len equ $-string1
+    string2 db "The series is: ", 10
+    string2len equ $-string2
+    newline db '', 10
+    nl equ $-newline
+
+section .bss
+    num resb 5
+    a resb 5
+    b resb 5
+    c resb 5
+    inter resb 5
+    count resb 5
+
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro read 1
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, %1
+    mov edx, 5
+    int 80h
+%endmacro
+
+%macro addition 3
+    mov eax, [%1]
+    sub eax, '0'
+	mov ebx, [%2]
+    sub ebx, '0'
+    add eax, ebx
+    add eax, '0'
+	mov [%3], eax
+%endmacro
+
+section .text 
+    global _start
+_start: 
+
+    write string1, string1len
+    read num
+    write string2, string2len
+    mov eax,[num]
+    sub eax, '0'
+    mov [num], eax
+    
+    mov al,[num]
+    cmp al, 0
+    je  exit
+        		; Initialize 'a' and 'b'
+    mov eax, '0'
+    mov [a], eax
+    write a, 5
+    write newline, nl
+    mov al,[num]
+    cmp al, 1
+    je  exit
+    mov eax, '1'
+    mov [b], eax
+    write b, 5
+    write newline, nl
+    mov al,[num]
+    cmp al, 2
+    je  exit
+        		; Initialize count
+    mov eax, 2
+    mov [count], eax
+    L1:
+        addition a, b, c
+        write c, 9
+        write newline, nl
+            ; ------- Move b to a
+        mov eax, [b]
+        mov [a], eax
+            ; ------- Move c to b 
+        mov eax, [c]
+        mov [b], eax
+            ; ------ Increment count
+        inc byte[count]
+            ; ------ Compare count and num
+        mov al, [count]
+        mov bl, [num]
+        cmp al, bl
+        jl L1
+    exit:
+        mov eax, 1
+        mov ebx, 0
+        int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+procedure Fibonacci
+section .data 
+    prompt db 'Enter number: ' 
+    prompt_len equ $ - prompt 
+    msg db 'Factorial: ' 
+    msg_len equ $ - msg 
+    newline db 10 
+ 
+section .bss 
+    n resb 2 
+    result resd 1 
+ 
+section .text 
+global _start 
+ 
+_start: 
+    call write_prompt 
+ 
+    call read_n 
+ 
+    ; Print "Factorial: " 
+    call write_msg 
+ 
+    movzx ecx, byte [n]     
+    sub ecx, '0'             
+    mov eax, 1               
+    call factorial 
+ 
+    call write_result 
+ 
+    call write_newline 
+ 
+    ; Exit program 
+    mov eax, 1 
+    mov ebx, 0 
+    int 80h 
+ 
+write_newline: 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, newline 
+    mov edx, 1 
+    int 80h 
+    ret 
+ 
+write_prompt: 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, prompt 
+    mov edx, prompt_len 
+    int 80h 
+    ret 
+ 
+read_n: 
+    mov eax, 3 
+    mov ebx, 0 
+    mov ecx, n 
+    mov edx, 2 
+    int 80h 
+    ret 
+ 
+write_msg: 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, msg 
+    mov edx, msg_len 
+    int 80h 
+    ret 
+ 
+factorial: 
+    cmp ecx, 1 
+    jle end_factorial 
+    imul eax, ecx         
+    dec ecx              
+    call factorial       
+end_factorial: 
+    mov [result], eax   
+    ret 
+ 
+write_result: 
+    mov eax, [result] 
+    call int_to_ascii 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, result_str 
+    mov edx, result_len 
+    int 80h 
+    ret 
+ 
+int_to_ascii: 
+    mov edi, result_str + 10 
+    mov byte [edi], 0 
+    dec edi 
+    mov ebx, 10 
+convert_loop: 
+    xor edx, edx 
+    div ebx 
+    add dl, '0' 
+    mov [edi], dl 
+    dec edi 
+    test eax, eax 
+    jnz convert_loop 
+    inc edi 
+    mov ecx, edi 
+    mov edx, result_str + 10 
+    sub edx, ecx 
+    ret 
+ 
+section .data 
+result_str db '0000000000'   
+result_len equ 10 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+procedure factorial
+section .data 
+    prompt db 'Enter number: ' 
+    prompt_len equ $ - prompt 
+    msg db 'Factorial: ' 
+    msg_len equ $ - msg 
+    newline db 10 
+ 
+section .bss 
+    n resb 2 
+    result resd 1 
+ 
+section .text 
+global _start 
+ 
+_start: 
+    call write_prompt 
+ 
+    call read_n 
+ 
+    ; Print "Factorial: " 
+    call write_msg 
+ 
+    movzx ecx, byte [n]     
+    sub ecx, '0'             
+    mov eax, 1               
+    call factorial 
+ 
+    call write_result 
+ 
+    call write_newline 
+ 
+    ; Exit program 
+    mov eax, 1 
+    mov ebx, 0 
+    int 80h 
+ 
+write_newline: 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, newline 
+    mov edx, 1 
+    int 80h 
+    ret 
+ 
+write_prompt: 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, prompt 
+    mov edx, prompt_len 
+    int 80h 
+    ret 
+ 
+read_n: 
+    mov eax, 3 
+    mov ebx, 0 
+    mov ecx, n 
+    mov edx, 2 
+    int 80h 
+    ret 
+ 
+write_msg: 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, msg 
+    mov edx, msg_len 
+    int 80h 
+    ret 
+ 
+factorial: 
+    cmp ecx, 1 
+    jle end_factorial 
+    imul eax, ecx         
+    dec ecx              
+    call factorial       
+end_factorial: 
+    mov [result], eax   
+    ret 
+ 
+write_result: 
+    mov eax, [result] 
+    call int_to_ascii 
+    mov eax, 4 
+    mov ebx, 1 
+    mov ecx, result_str 
+    mov edx, result_len 
+    int 80h 
+    ret 
+ 
+int_to_ascii: 
+    mov edi, result_str + 10 
+    mov byte [edi], 0 
+    dec edi 
+    mov ebx, 10 
+convert_loop: 
+    xor edx, edx 
+    div ebx 
+    add dl, '0' 
+    mov [edi], dl 
+    dec edi 
+    test eax, eax 
+    jnz convert_loop 
+    inc edi 
+    mov ecx, edi 
+    mov edx, result_str + 10 
+    sub edx, ecx 
+    ret 
+ 
+section .data 
+result_str db '0000000000'   
+result_len equ 10 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+multi digit addition
+
+section .data
+    msg1 db 'Enter number of digits: ', 0
+    len1 equ $-msg1
+    msg2 db 'Enter number: ', 0
+    len2 equ $-msg2
+    msg3 db 'The addition of the two numbers is ', 0
+    len3 equ $-msg3
+    newline db 10
+    l equ $-newline
+
+%macro readsystem 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro writesystem 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .bss
+    digits resb 2
+    num1 resb 10
+    num2 resb 10
+    sum resb 10
+
+section .text
+global _start
+_start:
+
+    ; Ask for the number of digits
+    writesystem msg1, len1
+    readsystem digits, 2
+
+    ; Convert ASCII input to integer
+    mov esi, digits
+    call atoi
+    mov edx, eax  ; Store number of digits in edx
+
+    ; Ask for first number
+    writesystem msg2, len2
+    readsystem num1, edx  ; Read specified number of digits
+
+    ; Ask for second number
+    writesystem msg2, len2
+    readsystem num2, edx  ; Read specified number of digits
+
+    ; Convert numbers to integers and add
+    mov esi, num1
+    call atoi
+    mov ebx, eax
+
+    mov esi, num2
+    call atoi
+    add eax, ebx
+
+    ; Convert sum to string
+    mov esi, sum
+    call itoa
+
+    ; Print result
+    writesystem msg3, len3
+    writesystem sum, 10
+    writesystem newline, l
+
+    ; Exit
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+atoi:
+    xor eax, eax
+    xor ecx, ecx
+atoi_loop:
+    movzx edx, byte [esi + ecx]
+    cmp edx, 10
+    je atoi_done
+    sub edx, '0'
+    imul eax, eax, 10
+    add eax, edx
+    inc ecx
+    jmp atoi_loop
+atoi_done:
+    ret
+
+itoa:
+    xor ecx, ecx
+itoa_loop:
+    xor edx, edx
+    div dword [ten]
+    add dl, '0'
+    mov [esi + ecx], dl
+    inc ecx
+    test eax, eax
+    jnz itoa_loop
+    mov byte [esi + ecx], 0
+    mov edi, esi
+    add edi, ecx
+    dec edi
+    mov ebx, esi
+itoa_reverse:
+    cmp ebx, edi
+    jge itoa_done_reverse
+    mov al, [ebx]
+    mov ah, [edi]
+    mov [ebx], ah
+    mov [edi], al
+    inc ebx
+    dec edi
+    jmp itoa_reverse
+itoa_done_reverse:
+    ret
+
+section .data
+    ten dd 10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+multi digit subtraction
+
+
+section .data
+    msg1 db 'Enter number of digits: ', 0
+    len1 equ $-msg1
+    msg2 db 'Enter number: ', 0
+    len2 equ $-msg2
+    msg3 db 'The subtraction of the two numbers is ', 0
+    len3 equ $-msg3
+    newline db 10
+    l equ $-newline
+
+%macro readsystem 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro writesystem 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .bss
+    digits resb 2
+    num1 resb 10
+    num2 resb 10
+    result resb 10
+
+section .text
+global _start
+_start:
+
+    ; Ask for the number of digits
+    writesystem msg1, len1
+    readsystem digits, 2
+
+    ; Convert ASCII input to integer
+    mov esi, digits
+    call atoi
+    mov edx, eax  ; Store number of digits in edx
+
+    ; Ask for first number
+    writesystem msg2, len2
+    readsystem num1, edx  ; Read specified number of digits
+
+    ; Ask for second number
+    writesystem msg2, len2
+    readsystem num2, edx  ; Read specified number of digits
+
+    ; Convert numbers to integers
+    mov esi, num1
+    call atoi
+    mov ebx, eax  ; Store first number in ebx
+
+    mov esi, num2
+    call atoi
+    sub ebx, eax  ; Perform subtraction (num1 - num2)
+
+    ; Convert result to string
+    mov eax, ebx
+    mov esi, result
+    call itoa
+
+    ; Print result
+    writesystem msg3, len3
+    writesystem result, 10
+    writesystem newline, l
+
+    ; Exit
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+atoi:
+    xor eax, eax
+    xor ecx, ecx
+atoi_loop:
+    movzx edx, byte [esi + ecx]
+    cmp edx, 10
+    je atoi_done
+    sub edx, '0'
+    imul eax, eax, 10
+    add eax, edx
+    inc ecx
+    jmp atoi_loop
+atoi_done:
+    ret
+
+itoa:
+    xor ecx, ecx
+    test eax, eax
+    jns itoa_positive
+    neg eax
+    mov byte [esi], '-'
+    inc esi
+itoa_positive:
+    xor edx, edx
+itoa_loop:
+    div dword [ten]
+    add dl, '0'
+    mov [esi + ecx], dl
+    inc ecx
+    test eax, eax
+    jnz itoa_loop
+    mov byte [esi + ecx], 0
+    mov edi, esi
+    add edi, ecx
+    dec edi
+    mov ebx, esi
+itoa_reverse:
+    cmp ebx, edi
+    jge itoa_done_reverse
+    mov al, [ebx]
+    mov ah, [edi]
+    mov [ebx], ah
+    mov [edi], al
+    inc ebx
+    dec edi
+    jmp itoa_reverse
+itoa_done_reverse:
+    ret
+
+section .data
+    ten dd 10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+array
+
+
+more than 5 less than 5
+
+section .data
+msg2 db 'Array elements: '
+msg2len equ $-msg2
+msg3 db 'Enter Array elements: '
+msg3len equ $-msg3
+msg4 db 'Average: '
+msg4len equ $-msg4
+newline db '', 10
+space db ' '
+num db '5'              ; total numbers to read
+
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro read 2
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+    ; flush newline
+    mov eax, 3
+    mov ebx, 2
+    mov ecx, trash
+    mov edx, 1
+    int 80h
+%endmacro
+
+input:
+    mov byte[k], 0
+    mov esi, arr
+    mov eax, 0            ; sum = 0
+    mov [sum], eax
+l_input:
+    read element, 1
+    movzx ebx, byte [element] ; get ASCII
+    sub ebx, '0'         
+    mov [esi], bl         
+    add eax, ebx          ; sum += number
+    inc esi
+    inc byte[k]
+    mov al, [k]
+    mov bl, [num]
+    cmp al, bl
+    jl l_input
+    mov [sum], eax       
+ret
+
+display:
+    mov byte[k], 0
+    mov esi, arr
+d_input:
+    movzx eax, byte [esi]
+    add eax, '0'
+    mov [element], al
+    write element, 1
+    write space, 1
+    inc esi
+    inc byte[k]
+    mov al, [k]
+    mov bl, [num]
+    cmp al, bl
+    jl d_input
+    write newline, 1
+ret
+
+average:
+    mov eax, [sum]       
+    mov bl, [num]
+    div bl                
+    add al, '0'         
+    mov [element], al
+ret
+
+section .bss
+arr resb 10
+k resb 1
+element resb 1
+trash resb 1
+sum resd 1
+
+section .text
+global _start
+_start:
+    ; Convert '5' to integer
+    movzx eax, byte [num]
+    sub eax, '0'
+    mov [num], al
+
+    ; Prompt and read array
+    write msg3, msg3len
+    call input
+
+    ; Display array
+    write msg2, msg2len
+    call display
+
+    ; Show average
+    call average
+    write msg4, msg4len
+    write element, 1
+    write newline, 1
+
+    ; Exit
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+print array
+
+section .data
+msg db 'Enter number of elements: '
+msglen equ $-msg
+msg1 db 'Enter elements:' 
+msg1len equ $-msg1
+msg2 db 'Array elements: ' 
+msg2len equ $-msg2
+newline db '',10
+space db ' '
+
+%macro write 2
+	mov eax,4
+	mov ebx,1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+ 
+%macro read 2
+	mov eax,3
+	mov ebx,2
+	mov ecx,%1
+	mov edx,%2
+	int 80h
+	mov eax,3
+	mov ebx,2
+	mov ecx,trash
+	mov edx,1
+	int 80h
+%endmacro
+
+input:	
+	mov byte[k], 0
+	mov esi, arr
+	l_input:
+		read element, 1
+		mov ebx, [element]
+		sub ebx, '0'
+		mov [esi], ebx
+		inc esi
+		inc byte[k]
+		mov al, [k]
+		mov bl, [num]
+		cmp al,bl
+		jl l_input
+ret
+
+display:
+	mov byte[k], 0
+	mov esi, arr
+	d_input:
+		mov eax,[esi]
+		add eax,'0'
+		mov [element],eax
+		write element, 1
+		write space, 1
+		inc esi
+		inc byte[k]
+		mov al, [k]
+		mov bl, [num]
+		cmp al,bl
+		jl d_input
+	write newline,1
+ret
+
+section .bss
+num RESB 1
+arr resb 10
+k resb 1
+element resb 1
+trash resb 1
+
+section .text
+global _start
+_start:
+
+	write msg, msglen
+	read num, 1
+	mov eax, [num]
+	sub eax, '0'
+	mov [num],eax
+	call input
+	call display
+mov eax ,1
+mov ebx ,0
+int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+positive negative array
+section .data
+msg1 db 'Positive numbers: ' 
+msg1len equ $-msg1
+msg2 db 'Negative numbers: ' 
+msg2len equ $-msg2
+new db '',10
+nl equ $-new
+arr db 1, -2, -3, -3, 5
+
+%macro write 2
+	mov eax,4
+	mov ebx,1
+	mov ecx, %1
+	mov edx, %2
+	int 80h
+%endmacro
+
+%macro read 2
+	mov eax,3
+	mov ebx,2
+	mov ecx,%1
+	mov edx,%2
+	int 80h
+%endmacro
+
+count:
+	mov eax, 0
+	mov [pcnt],eax
+	mov [ncnt], eax
+	mov ecx, 5
+	mov esi, 0
+	mov edx,arr
+	label:
+	mov bl, [edx+esi] 
+	cmp bl,0
+	jg positive
+	inc byte[ncnt]
+	jmp end
+	positive:
+	inc byte[pcnt]
+	end:
+	inc esi
+	loop label
+	mov eax, [pcnt]
+	add eax, '0'
+	mov [pcnt], eax
+	mov eax, [ncnt]
+	add eax, '0'
+	mov [ncnt], eax
+ret
+
+section .bss
+pcnt resb 1
+ncnt resb 1
+
+section .text
+global _start
+_start:
+	call count
+	write msg1,msg1len
+	write pcnt, 1
+	write new,nl
+	write msg2,msg2len
+	write ncnt, 1
+	write new,nl
+	mov eax ,1
+	mov ebx ,0
+	int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+odd even array
+%macro print 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro read 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1a
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .data
+    msg db 'Enter the elements of the array: ', 0xA
+    plen equ $ - msg
+    msg1 db 'Number of even numbers: '
+    mlen1 equ $ - msg1
+    msg2 db 'Number of odd numbers: '
+    mlen2 equ $ - msg2
+    newline db 0xA
+    nlen equ $ - newline
+
+section .bss
+    array resb 5
+    num resb 10
+    temp resb 1
+    even_count resb 1
+    odd_count resb 1
+
+section .text
+    global _start
+
+_start:
+    mov ecx, 5
+    mov esi, 0
+    mov byte[even_count], 0
+    mov byte[odd_count], 0
+
+    push ecx
+    print msg, plen
+    pop ecx
+
+input_loop:
+    push ecx
+    read num, 10
+    
+    mov edi, 0
+    mov bl, [num]
+    cmp bl, '-'
+    jne process_pos
+    inc edi
+    
+process_pos:
+    xor eax, eax
+    mov ebx, 10
+
+convert_loop:
+    movzx ecx, byte[num + edi]
+    cmp cl, 0xA
+    je end_convert
+    
+    sub cl, '0'
+    mul ebx
+    add eax, ecx
+    inc edi
+    jmp convert_loop
+
+end_convert:
+    cmp byte[num], '-'
+    jne store_num
+    neg eax
+
+store_num:
+    mov [array + esi], al
+    inc esi
+    pop ecx
+    loop input_loop
+
+    mov ecx, 5
+    mov esi, 0
+
+count_loop:
+    mov al, [array + esi]
+    cbw
+    mov bl, 2
+    idiv bl
+    cmp ah, 0
+    jz even_number
+    inc byte[odd_count]
+    jmp next_number
+even_number:
+    inc byte[even_count]
+next_number:
+    inc esi
+    loop count_loop
+
+    print msg1, mlen1
+    mov al, [even_count]
+    add al, '0'
+    mov [temp], al
+    print temp, 1
+    print newline, nlen
+
+    print msg2, mlen2
+    mov al, [odd_count]
+    add al, '0'
+    mov [temp], al
+    print temp, 1
+    print newline, nlen
+
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+selection sort 
+section .data
+    msg2 db "Enter the elements in the array: "
+    msg2len equ $-msg2
+    msg3 db "The sorted array is: "
+    msg3len equ $-msg3
+    msg4 db "Pass "
+    msg4len equ $-msg4
+    msg5 db ": "
+    msg5len equ $-msg5
+    newline db 10
+    space db ' '
+    n db 5       ; Fixed size of 5
+
+%macro write 2
+    mov eax,4         
+    mov ebx,1     
+    mov ecx,%1     
+    mov edx,%2       
+    int 80h   
+%endmacro
+
+%macro read 2
+    mov eax,3        
+    mov ebx,2        
+    mov ecx,%1       
+    mov edx,%2       
+    int 80h           
+    mov eax,3         
+    mov ebx,2        
+    mov ecx,trash     
+    mov edx,1         
+    int 80h          
+%endmacro
+
+section .bss
+    arr resb 5              ; Array of size 5
+    i resb 1               ; Single byte counter
+    pass_num resb 1        ; Pass number for display
+    temp resb 1            ; Temporary storage
+    trash resb 1          
+    min_idx resb 1        ; Index of minimum element
+
+section .text
+global _start
+
+input:
+    write msg2,msg2len      
+    mov [i], byte 0       
+loop1:
+    movzx esi, byte [i]   
+    cmp esi, 5            
+    jge end1              
+    lea esi, [arr + esi]  
+    read esi, 1           
+    inc byte [i]          
+    jmp loop1              
+end1:
+    ret                  
+
+display:
+    mov [i], byte 0       
+loop2:
+    movzx esi, byte [i]   
+    cmp esi, 5            
+    jge end2              
+    lea esi, [arr + esi]  
+    write esi, 1          
+    write space, 1        
+    inc byte [i]          
+    jmp loop2              
+end2:
+    write newline, 1      
+    ret                   
+
+selection_sort:
+    mov byte [pass_num], '1'  ; Initialize pass number
+    mov al, 0                 ; Outer loop counter (i)
+outer_loop:
+    cmp al, 4                 ; n-1 iterations
+    jge sort_end
+    
+    ; Display current pass
+    pushad
+    write msg4, msg4len
+    mov cl, [pass_num]
+    mov [temp], cl
+    write temp, 1
+    write msg5, msg5len
+    call display
+    popad
+    
+    mov [min_idx], al        ; min_idx = i
+    mov cl, al               ; Inner loop counter (j)
+    inc cl                   ; j = i + 1
+
+find_min:
+    cmp cl, 5                ; Compare with array size
+    jge swap_min
+    
+    ; Compare arr[j] with arr[min_idx]
+    movzx esi, cl
+    movzx edi, byte [min_idx]
+    mov bl, [arr + esi]      ; arr[j]
+    mov bh, [arr + edi]      ; arr[min_idx]
+    cmp bl, bh
+    jge no_update_min
+    
+    ; Update min_idx
+    mov [min_idx], cl
+
+no_update_min:
+    inc cl
+    jmp find_min
+
+swap_min:
+    ; Swap arr[i] with arr[min_idx]
+    movzx esi, al            ; i
+    movzx edi, byte [min_idx]
+    mov bl, [arr + esi]      ; temp = arr[i]
+    mov bh, [arr + edi]      ; arr[min_idx]
+    mov [arr + esi], bh      ; arr[i] = arr[min_idx]
+    mov [arr + edi], bl      ; arr[min_idx] = temp
+    
+    inc al
+    inc byte [pass_num]
+    jmp outer_loop
+
+sort_end:
+    ; Display final pass
+    write msg4, msg4len
+    mov cl, [pass_num]
+    mov [temp], cl
+    write temp, 1
+    write msg5, msg5len
+    call display
+    ret
+
+_start:
+    call input               
+    write newline, 1         
+    call selection_sort      
+    write newline, 1         
+    write msg3, msg3len      
+    call display            
+    mov eax, 1              
+    mov ebx, 0              
+    int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+insertion sort
+section .data
+    msg db "Enter number of elements: "
+    msglen equ $-msg
+    msg2 db "Enter the elements in the array: "
+    msg2len equ $-msg2
+    msg3 db "The sorted array is: "
+    msg3len equ $-msg3
+    msg4 db "Pass "
+    msg4len equ $-msg4
+    msg5 db ": "
+    msg5len equ $-msg5
+    newline db 10
+    space db ' '
+    n db '5'
+
+%macro write 2
+    mov eax,4
+    mov ebx,1
+    mov ecx,%1
+    mov edx,%2
+    int 80h
+%endmacro
+    
+%macro read 2
+    mov eax,3
+    mov ebx,0
+    mov ecx,%1
+    mov edx,%2
+    int 80h
+    mov eax,3
+    mov ebx,0
+    mov ecx,trash
+    mov edx,1
+    int 80h
+%endmacro
+    
+input:
+    write msg2,msg2len
+    mov byte[i], 0        ; Initialize counter as numeric 0
+loop1:
+    movzx esi, byte[i]
+    cmp esi, 5            ; Compare with numeric 5
+    jge end1
+    lea esi, [arr + esi]  ; Calculate array address
+    read esi, 1
+    inc byte[i]
+    jmp loop1    
+end1:
+    ret
+
+display:
+    mov byte[i], 0        ; Initialize counter as numeric 0
+loop2:
+    movzx esi, byte[i]
+    cmp esi, 5            ; Compare with numeric 5
+    jge end2
+    lea esi, [arr + esi]  ; Calculate array address
+    write esi, 1
+    write space, 1
+    inc byte[i]
+    jmp loop2    
+end2:
+    write newline, 1    
+    ret
+
+insertion_sort:
+    mov byte[j], '1'      ; Initialize pass counter to '1'
+    mov eax, 1            ; Start from second element
+loop3:
+    cmp al, 5             ; Compare with array size
+    jge end3
+    
+    ; Display current pass
+    pushad
+    write msg4, msg4len
+    mov dl, [j]
+    mov [temp], dl        ; Store current pass number
+    write temp, 1
+    write msg5, msg5len
+    call display
+    popad
+    
+    ; Store key
+    mov dl, [arr + eax]   ; Key = arr[eax]
+    mov ecx, eax
+    dec ecx               ; j = i-1
+    
+loop4:
+    cmp cl, 0
+    jl update
+    mov dh, [arr + ecx]   ; Get arr[j]
+    cmp dh, dl            ; Compare with key
+    jle update
+    
+    ; Move element
+    mov [arr + ecx + 1], dh
+    dec ecx
+    jmp loop4
+    
+update:
+    mov [arr + ecx + 1], dl
+    inc eax               ; Move to next element
+    inc byte[j]           ; Increment pass counter
+    jmp loop3
+    
+end3:
+    ; Display final pass
+    write msg4, msg4len
+    mov dl, [j]
+    mov [temp], dl
+    write temp, 1
+    write msg5, msg5len
+    call display
+    ret
+
+section .bss
+    arr resb 5            ; Array of 5 elements
+    i resb 1              ; Counter for input/display
+    j resb 1              ; Pass counter
+    temp resb 1           ; Temporary storage
+    trash resb 1
+
+section .text
+global _start
+
+_start:
+    call input
+    write newline, 1
+    call insertion_sort
+    write newline, 1
+    write msg3, msg3len
+    call display
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bubble sort
+section .data
+    msg2 db "Enter the elements in the array: "
+    msg2len equ $-msg2
+    msg3 db "The sorted array is: "
+    msg3len equ $-msg3
+    msg4 db "Pass "
+    msg4len equ $-msg4
+    msg5 db ": "
+    msg5len equ $-msg5
+    newline db 10
+    space db ' '
+    n db 5       ; Fixed size of 5
+
+%macro write 2
+    mov eax,4         
+    mov ebx,1     
+    mov ecx,%1     
+    mov edx,%2       
+    int 80h   
+%endmacro
+
+%macro read 2
+    mov eax,3        
+    mov ebx,2        
+    mov ecx,%1       
+    mov edx,%2       
+    int 80h           
+    mov eax,3         
+    mov ebx,2        
+    mov ecx,trash     
+    mov edx,1         
+    int 80h          
+%endmacro
+
+input:
+    write msg2,msg2len      
+    mov [i], byte 0       ; Initialize counter to 0 (numeric)
+loop1:
+    movzx esi, byte [i]   ; Use movzx for proper zero extension
+    cmp esi, 5            ; Compare with 5 directly
+    jge end1              
+    lea esi, [arr + esi]  ; Calculate array address
+    read esi, 1           
+    inc byte [i]          ; Increment counter
+    jmp loop1              
+end1:
+    ret                  
+
+display:
+    mov [i], byte 0       ; Initialize counter to 0 (numeric)
+loop2:
+    movzx esi, byte [i]   ; Use movzx for proper zero extension
+    cmp esi, 5            ; Compare with 5 directly
+    jge end2              
+    lea esi, [arr + esi]  ; Calculate array address
+    write esi, 1          
+    write space, 1        
+    inc byte [i]          
+    jmp loop2              
+end2:
+    write newline, 1      
+    ret                   
+
+bubble_sort:
+    mov byte [pass_num], '1'  ; Initialize pass number to '1'
+    mov al, 0                 ; Outer loop counter
+outer_loop:
+    cmp al, 4                 ; n-1 iterations
+    jge sort_end
+    
+    ; Display current pass number and array
+    pushad
+    write msg4, msg4len
+    mov cl, [pass_num]
+    mov [temp], cl
+    write temp, 1
+    write msg5, msg5len
+    call display
+    popad
+    
+    ; Inner loop for comparisons
+    mov cl, 0                 ; Inner loop counter
+inner_loop:
+    mov dl, 4                 ; n-1
+    sub dl, al               
+    cmp cl, dl
+    jge inner_loop_end
+    
+    ; Compare adjacent elements
+    movzx esi, cl
+    mov bl, [arr + esi]      ; First element
+    mov bh, [arr + esi + 1]  ; Next element
+    cmp bl, bh
+    jle no_swap
+    
+    ; Swap elements
+    mov [arr + esi], bh
+    mov [arr + esi + 1], bl
+    
+no_swap:
+    inc cl
+    jmp inner_loop
+    
+inner_loop_end:
+    inc al
+    inc byte [pass_num]      ; Increment pass number
+    jmp outer_loop
+    
+sort_end:
+    ; Display final pass
+    write msg4, msg4len
+    mov cl, [pass_num]
+    mov [temp], cl
+    write temp, 1
+    write msg5, msg5len
+    call display
+    ret
+
+section .bss
+    arr resb 5             ; Array of size 5
+    i resb 1               ; Single byte counter
+    pass_num resb 1        ; Pass number for display
+    temp resb 1            ; Temporary storage
+    trash resb 1          
+
+section .text
+global _start
+
+_start:
+    call input               
+    write newline, 1         
+    call bubble_sort         
+    write newline, 1         
+    write msg3, msg3len      
+    call display            
+    mov eax, 1              
+    mov ebx, 0              
+    int 80h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+linear search
+; Data section to store strings and constants
+section .data
+msg1 db 'Enter number of elements : '
+msg1len equ $-msg1
+msg2 db 'Enter elements in array : '
+msg2len equ $-msg2
+msg3 db 'Enter number to be searched: ' 
+msg3len equ $-msg3
+msg4 db 'Number found at index: ' 
+msg4len equ $-msg4
+msg5 db 'Number not found' 
+msg5len equ $-msg5
+newline db '',10  ; New line character to format output
+n1 equ $-newline
+
+; Macro to simplify writing strings to stdout
+%macro write 2
+	mov eax, 4           ; syscall number for sys_write
+	mov ebx, 1           ; file descriptor 1 for stdout
+	mov ecx, %1          ; message to write
+	mov edx, %2          ; message length
+	int 80h              ; interrupt to invoke syscall
+%endmacro
+ 
+; Macro to simplify reading input from stdin
+%macro read 2
+	mov eax, 3           ; syscall number for sys_read
+	mov ebx, 2           ; file descriptor 0 for stdin, changed to 2 for buffer (?)
+	mov ecx, %1          ; buffer to read input into
+	mov edx, %2          ; number of bytes to read
+	int 80h              ; interrupt to invoke syscall
+%endmacro
+
+; Input routine to read integers from user
+input:
+	mov byte[i], 0
+	mov esi, arr         ; ESI points to the start of the array
+	l_input:
+		read element, 2    ; Read 2 bytes of data
+		mov ebx, [element]
+		sub ebx, '0'       ; Convert ASCII character to integer
+		mov [esi], ebx     ; Store integer in array
+		inc esi            ; Move to next element in array
+		inc byte[i]
+		mov al, [i]        ; Load current count
+		mov bl, [num]
+		sub bl, '0'
+		CMP al, bl         ; Compare count with number of elements to read
+		JL l_input         ; Loop until all elements are read
+	mov byte[i], 0
+	mov esi, arr
+ret
+
+; Linear search algorithm
+linear_search:
+	mov ecx, [num]       ; Load number of elements into ECX
+	sub ecx, '0'         ; Convert from ASCII to integer
+	mov esi, 0           ; Index for array
+	label:
+		movzx edi, byte[arr+esi]  ; Load element into EDI
+		mov [temp], edi           ; Store it temporarily
+		mov al, [temp]            ; Move element to AL for comparison
+		mov bl, [searche]
+		sub bl, '0'
+		cmp al, bl
+		je l1                     ; If found, jump to label l1
+		jmp end
+	l1:
+		write msg4, msg4len       ; Output found message
+		add esi, '0'              ; Convert index to ASCII
+		mov [index], esi
+		write index, 2            ; Write index to stdout
+		write newline, n1
+		mov eax, 1
+		mov ebx, 0
+		int 80h                   ; Exit program
+	end:
+		inc esi                   ; Increment index
+		loop label                ; Loop through all elements
+ret
+
+; Uninitialized data section
+section .bss
+arr resb 10
+searche resb 10
+i resb 1
+index resb 2
+element resb 2
+num resb 10
+temp resb 5
+
+; Start of the text (code) section
+section .text
+global _start
+_start:
+	write msg1, msg1len            ; Prompt user to enter number of elements
+	read num, 10                    ; Read the number of elements
+	write msg2, msg2len             ; Ask for elements in the array
+	call input                      ; Read elements into array
+	write msg3, msg3len             ; Ask for number to search
+	read searche, 10                ; Read the search key
+	call linear_search              ; Perform linear search
+	write msg5, msg5len             ; If not found, write not found message
+	write newline, n1
+	mov eax, 1                      ; Syscall for exit
+	mov ebx, 0
+	int 80h                         ; Execute syscall
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+binary search
+section .data
+    msg db "Enter number of elements: "
+    msglen equ $-msg                       ; Calculate length of msg
+    msg2 db "Enter elements: "
+    msg2len equ $-msg2                     ; Calculate length of msg2
+    msg3 db "Enter element to search: "
+    msg3len equ $-msg3                     ; Calculate length of msg3
+    msg4 db "Found at index: "
+    msg4len equ $-msg4                     ; Calculate length of msg4
+    msg5 db "Not found:"
+    msg5len equ $-msg5                     ; Calculate length of msg5
+    newline db 10
+    space db ' '
+
+%macro write 2
+    mov eax,4
+    mov ebx,1
+    mov ecx,%1
+    mov edx,%2
+    int 80h                               ; Perform system call to write output
+%endmacro
+    
+%macro read 2
+    mov eax,3
+    mov ebx,2
+    mov ecx,%1
+    mov edx,%2
+    int 80h                               ; Perform system call to read input
+    mov eax,3
+    mov ebx,2
+    mov ecx,trash
+    mov edx,1
+    int 80h                               ; Clear the buffer after reading
+%endmacro
+    
+input:
+    mov ecx,0
+repeat_input:                            ; Loop to read multiple elements
+    cmp ecx,edx
+    jge next_input
+    mov esi,eax
+    add esi,ecx
+    pushad
+    read esi,1
+    popad
+    inc ecx
+    jmp repeat_input
+next_input:
+    ret
+
+binary_search:
+    and edi,000fh                       ; Ensure EDI is within bounds
+    mov [lb],byte 0                      ; Initialize lower bound
+    mov [ub],dl                          ; Set upper bound to the number of elements
+repeat_search:
+    mov cl,[lb]
+    mov dl,[ub]
+    cmp cl,dl
+    jg next_search                      ; Exit if lower bound exceeds upper bound
+    pushad
+    mov al,[lb]
+    add al,[ub]
+    cbw
+    mov bl,2
+    div bl                              ; Calculate the middle index
+    mov [mid],al
+    popad
+    mov edx,[mid]
+    and edx,000fh
+    mov esi,dword [eax+edx]
+    and esi,000fh
+    cmp edi,esi
+    je matched
+    jl lower_part
+upper_part:
+    mov bl,[mid]
+    add bl,1
+    mov [lb],bl                         ; Adjust lower bound for the next iteration
+    jmp repeat_search
+lower_part:
+    mov bl,[mid]
+    sub bl,1
+    mov [ub],bl                         ; Adjust upper bound for the next iteration
+    jmp repeat_search
+matched:
+    add edx,'0'
+    mov [index],edx                     ; Save the matched index
+    pushad
+    write msg4,msg4len                  ; Write "Found at index:"
+    write index,1                       ; Write the index
+    popad
+    ret
+next_search:
+    write msg5,msg5len                  ; Write "Not found" message
+    ret
+    
+section .bss
+    n resb 4
+    num resb 4
+    arr resb 10
+    index resb 4
+    lb resb 1
+    ub resb 1
+    mid resb 1
+    trash resb 1
+
+section .text
+global _start
+
+_start:
+    write msg,msglen                    ; Prompt for number of elements
+    read n,1                            ; Read number of elements
+    sub [n],byte '0'                    ; Convert ASCII to integer
+    write msg2,msg2len                  ; Prompt to enter elements
+    mov eax,arr
+    mov edx,[n]
+    call input                          ; Call input procedure to read elements
+    write msg3,msg3len                  ; Prompt for element to search
+    read num,1                          ; Read the element to search
+    mov eax,arr
+    mov edx,[n]
+    mov edi,[num]
+    call binary_search                  ; Perform binary search on the array
+    mov eax,1
+    mov ebx,0
+    int 80h                             ; Exit the program
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
